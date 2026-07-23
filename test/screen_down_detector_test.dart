@@ -31,6 +31,17 @@ void main() {
     );
   }
 
+  void emitAccelerometerError() {
+    messenger.handlePlatformMessage(
+      accelerometerChannelName,
+      codec.encodeErrorEnvelope(
+        code: 'sensor_error',
+        message: 'Accelerometer is unavailable',
+      ),
+      (ByteData? _) {},
+    );
+  }
+
   setUp(() {
     messenger.setMockMessageHandler(methodChannelName, (message) async {
       return codec.encodeSuccessEnvelope(null);
@@ -57,6 +68,7 @@ void main() {
       MaterialApp(
         home: ScreenDownDetector(
           onScreenDown: () => callbackCount++,
+          confirmationDuration: const Duration(milliseconds: 500),
           child: const Text('child'),
         ),
       ),
@@ -65,14 +77,46 @@ void main() {
     expect(find.text('child'), findsOneWidget);
 
     emitAccelerometerEvent(x: 0, y: 0, z: -9);
-    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 499));
+
+    expect(callbackCount, 0);
+
+    await tester.pump(const Duration(milliseconds: 1));
 
     expect(callbackCount, 1);
 
     await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
     emitAccelerometerEvent(x: 0, y: 0, z: -9);
-    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(callbackCount, 1);
+  });
+
+  testWidgets('reports sensor stream errors through onError', (tester) async {
+    Object? reportedError;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ScreenDownDetector(
+          onScreenDown: () {},
+          onError: (error) => reportedError = error,
+          child: const SizedBox.shrink(),
+        ),
+      ),
+    );
+
+    emitAccelerometerError();
+    await tester.pump();
+
+    expect(
+      reportedError,
+      isA<PlatformException>().having(
+        (error) => error.code,
+        'code',
+        'sensor_error',
+      ),
+    );
+
+    await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
   });
 }

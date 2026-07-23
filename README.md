@@ -48,6 +48,10 @@ class SensitiveContent extends StatelessWidget {
       onScreenDown: () {
         // Hide sensitive content, lock the screen, or trigger another action.
       },
+      onError: (error) {
+        // Report or otherwise handle a sensor error.
+      },
+      confirmationDuration: const Duration(milliseconds: 300),
       child: const Scaffold(
         body: Center(
           child: Text('Sensitive content'),
@@ -61,7 +65,12 @@ class SensitiveContent extends StatelessWidget {
 `ScreenDownDetector` starts listening in `initState` and stops listening in
 `dispose`; no manual lifecycle calls are required.
 
+Both `onError` and `confirmationDuration` are optional. The default confirmation
+duration is 150 milliseconds.
+
 ## How detection works
+
+The package uses `sensors_plus` to receive accelerometer events.
 
 A screen-down event is confirmed when:
 

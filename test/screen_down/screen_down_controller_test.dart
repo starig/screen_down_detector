@@ -31,6 +31,46 @@ void main() {
       });
     });
 
+    test('uses a custom confirmation duration', () {
+      fakeAsync((async) {
+        var callbackCount = 0;
+        final controller = ScreenDownController(
+          onScreenDown: () => callbackCount++,
+          confirmationDuration: const Duration(seconds: 2),
+        );
+
+        controller.handleAccelerometerEvent(event(x: 0, y: 0, z: -9));
+        async.elapse(const Duration(milliseconds: 1999));
+
+        expect(callbackCount, 0);
+
+        async.elapse(const Duration(milliseconds: 1));
+
+        expect(callbackCount, 1);
+      });
+    });
+
+    test('cancels pending confirmation when its duration changes', () {
+      fakeAsync((async) {
+        var callbackCount = 0;
+        final controller = ScreenDownController(
+          onScreenDown: () => callbackCount++,
+        );
+
+        controller.handleAccelerometerEvent(event(x: 0, y: 0, z: -9));
+        async.elapse(const Duration(milliseconds: 100));
+        controller.updateConfirmationDuration(const Duration(seconds: 1));
+        async.elapse(const Duration(milliseconds: 50));
+
+        expect(callbackCount, 0);
+
+        controller.handleAccelerometerEvent(event(x: 0, y: 0, z: -9));
+        async.elapse(const Duration(seconds: 1));
+
+        expect(callbackCount, 1);
+      });
+    });
+
     test(
       'cancels confirmation when the device moves away from screen down',
       () {
