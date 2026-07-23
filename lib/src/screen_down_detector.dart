@@ -1,17 +1,30 @@
 import 'dart:async';
 
-import 'package:device_position/screen_down/screen_down_controller.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
+import 'screen_down_controller.dart';
+
+/// A widget that reports when the device is placed with its screen facing down.
+///
+/// The accelerometer subscription is created when this widget is inserted into
+/// the widget tree and is cancelled automatically when it is removed.
 class ScreenDownDetector extends StatefulWidget {
+  /// Creates a screen-down detector around [child].
   const ScreenDownDetector({
     required this.onScreenDown,
     required this.child,
     super.key,
   });
 
+  /// Called once after the screen-down position has remained stable long enough
+  /// to be confirmed.
+  ///
+  /// The detector must first observe the device leave the screen-down position
+  /// before this callback can be called again.
   final VoidCallback onScreenDown;
+
+  /// The subtree below this detector.
   final Widget child;
 
   @override
@@ -28,14 +41,13 @@ class _ScreenDownDetectorState extends State<ScreenDownDetector> {
     _controller = ScreenDownController(
       onScreenDown: () => widget.onScreenDown(),
     );
-    _subscription =
-        accelerometerEventStream(
-          samplingPeriod: SensorInterval.uiInterval,
-        ).listen(
-          _controller.handleAccelerometerEvent,
-          onError: _handleSensorError,
-          cancelOnError: true,
-        );
+    _subscription = accelerometerEventStream(
+      samplingPeriod: SensorInterval.uiInterval,
+    ).listen(
+      _controller.handleAccelerometerEvent,
+      onError: _handleSensorError,
+      cancelOnError: true,
+    );
   }
 
   void _handleSensorError(Object error) {

@@ -1,16 +1,81 @@
-# device_position
+# screen_down_detector
 
-A new Flutter project.
+A Flutter widget that detects when a device is placed with its screen facing
+down.
 
-## Getting Started
+The detector manages the accelerometer subscription and its lifecycle
+automatically. It invokes the callback once per screen-down gesture and waits
+for the device to leave that position before it can invoke the callback again.
 
-This project is a starting point for a Flutter application.
+## Platform support
 
-A few resources to get you started if this is your first Flutter project:
+- Android
+- iOS
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Use a physical device when testing. Simulators might not provide accelerometer
+events.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Installation
+
+Add the package to your `pubspec.yaml`:
+
+```yaml
+dependencies:
+  screen_down_detector: ^0.0.1
+```
+
+Then run:
+
+```sh
+flutter pub get
+```
+
+## Usage
+
+Import the package and wrap the subtree that should listen for screen-down
+events:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:screen_down_detector/screen_down_detector.dart';
+
+class SensitiveContent extends StatelessWidget {
+  const SensitiveContent({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ScreenDownDetector(
+      onScreenDown: () {
+        // Hide sensitive content, lock the screen, or trigger another action.
+      },
+      child: const Scaffold(
+        body: Center(
+          child: Text('Sensitive content'),
+        ),
+      ),
+    );
+  }
+}
+```
+
+`ScreenDownDetector` starts listening in `initState` and stops listening in
+`dispose`; no manual lifecycle calls are required.
+
+## How detection works
+
+A screen-down event is confirmed when:
+
+- the accelerometer's `z` value is at most `-8 m/s²`;
+- horizontal acceleration remains within `±4 m/s²`;
+- the position remains valid for 150 milliseconds.
+
+The callback is invoked only once until the detector observes a reset position.
+
+## Example
+
+See the complete runnable application in the [`example`](example) directory.
+
+## Issues
+
+Please report issues on the
+[GitHub issue tracker](https://github.com/starig/screen_down_detector/issues).

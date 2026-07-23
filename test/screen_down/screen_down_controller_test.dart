@@ -1,6 +1,6 @@
-import 'package:device_position/screen_down/screen_down_controller.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:screen_down_detector/src/screen_down_controller.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
 void main() {

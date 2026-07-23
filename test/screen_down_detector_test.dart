@@ -1,7 +1,7 @@
-import 'package:device_position/screen_down/screen_down_detector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:screen_down_detector/screen_down_detector.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

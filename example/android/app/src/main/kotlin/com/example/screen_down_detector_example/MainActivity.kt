@@ -1,4 +1,4 @@
-package com.example.device_position
+package com.example.screen_down_detector_example
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -18,8 +18,7 @@ class ScreenDownController {
   bool _isScreenDown = false;
 
   void handleAccelerometerEvent(AccelerometerEvent event) {
-    final isFaceDownCandidate =
-        event.z <= _screenDownThreshold &&
+    final isFaceDownCandidate = event.z <= _screenDownThreshold &&
         event.x.abs() <= _maximumHorizontalAcceleration &&
         event.y.abs() <= _maximumHorizontalAcceleration;
 

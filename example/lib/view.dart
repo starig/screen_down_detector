@@ -1,8 +1,8 @@
 import 'dart:ui';
 
-import 'package:device_position/screen_down/screen_down_detector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:screen_down_detector/screen_down_detector.dart';
 
 class ScreenDownView extends StatefulWidget {
   const ScreenDownView({super.key});
@@ -27,12 +27,18 @@ class _ScreenDownViewState extends State<ScreenDownView> {
     return ScreenDownDetector(
       onScreenDown: _handleScreenDown,
       child: Scaffold(
-        appBar: AppBar(title: Text("Bank")),
+        appBar: AppBar(title: const Text('Bank')),
         body: Stack(
-          fit: .expand,
+          fit: StackFit.expand,
           children: [
             Center(
-              child: Text("\$2500", style: TextStyle(fontSize: 40, fontWeight: .w500)),
+              child: Text(
+                '\$2500',
+                style: const TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
             GestureDetector(
               onTap: () {
