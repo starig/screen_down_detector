@@ -30,6 +30,19 @@ Then run:
 flutter pub get
 ```
 
+### iOS setup
+
+Add `NSMotionUsageDescription` inside the `<dict>` element in your
+`ios/Runner/Info.plist`:
+
+```xml
+<key>NSMotionUsageDescription</key>
+<string>This app uses motion sensors to detect when the device is placed screen-down.</string>
+```
+
+The text shown above is an example. You can customize it, but it should clearly
+explain why your application needs access to motion sensor data.
+
 ## Usage
 
 Import the package and wrap the subtree that should listen for screen-down
