@@ -1,6 +1,6 @@
-import 'package:device_position/screen_down/screen_down_controller.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:screen_down_detector/src/screen_down_controller.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
 void main() {
@@ -26,6 +26,46 @@ void main() {
         expect(callbackCount, 0);
 
         async.elapse(const Duration(milliseconds: 1));
+
+        expect(callbackCount, 1);
+      });
+    });
+
+    test('uses a custom confirmation duration', () {
+      fakeAsync((async) {
+        var callbackCount = 0;
+        final controller = ScreenDownController(
+          onScreenDown: () => callbackCount++,
+          confirmationDuration: const Duration(seconds: 2),
+        );
+
+        controller.handleAccelerometerEvent(event(x: 0, y: 0, z: -9));
+        async.elapse(const Duration(milliseconds: 1999));
+
+        expect(callbackCount, 0);
+
+        async.elapse(const Duration(milliseconds: 1));
+
+        expect(callbackCount, 1);
+      });
+    });
+
+    test('cancels pending confirmation when its duration changes', () {
+      fakeAsync((async) {
+        var callbackCount = 0;
+        final controller = ScreenDownController(
+          onScreenDown: () => callbackCount++,
+        );
+
+        controller.handleAccelerometerEvent(event(x: 0, y: 0, z: -9));
+        async.elapse(const Duration(milliseconds: 100));
+        controller.updateConfirmationDuration(const Duration(seconds: 1));
+        async.elapse(const Duration(milliseconds: 50));
+
+        expect(callbackCount, 0);
+
+        controller.handleAccelerometerEvent(event(x: 0, y: 0, z: -9));
+        async.elapse(const Duration(seconds: 1));
 
         expect(callbackCount, 1);
       });
